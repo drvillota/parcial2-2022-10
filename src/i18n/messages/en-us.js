@@ -2,9 +2,13 @@ import { LOCALES } from '../locales';
 
 const english = {
   [LOCALES.ENGLISH]: {
-    hello: 'Hello',
-    pokemons: 'Pokemons',
-    test: 'Web Test',
+    Tittle: "Most wanted pokemons",
+	  Image: "Image",
+    Name: "Name",
+    Description: "Description",
+    Height: "Height",
+    Weight: "Weight",
+    Type: "Type"
   },
 };
 
