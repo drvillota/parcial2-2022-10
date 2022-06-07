@@ -8,7 +8,12 @@ const spanish = {
     Description: "Descrición",
     Height: "Altura",
     Weight: "Peso",
-    Type: "Tipo"
+    Type: "Tipo",
+    test: "prueba",
+    pokemons: "pokemones",
+    Language: "Idioma",
+    English: "Inglés",
+    Spanish: "Español"
   },
 };
 

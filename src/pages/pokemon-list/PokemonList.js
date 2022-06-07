@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap"
 import './PokemonList.scss';
 import { FormattedNumber } from "react-intl";
 import { FormattedMessage } from "react-intl";
 import BarChart from "./../../components/bar-chart";
-import Pie from "./../../components/pie-chart";
+import { PokemonsContext } from "../../context/PokemonsContext";
+import { LocaleContext } from "../../context/LocaleContext";
+import { Button } from "bootstrap";
+
+export var fetchPokemons = null
 
 export const PokemonList = () => {
   //URLs data
@@ -11,33 +16,32 @@ export const PokemonList = () => {
     "https://gist.githubusercontent.com/jhonatan89/e379fadf8ed0f5381a2d8f8f3dea90c3/raw/f8357c439bbb7b4bd3dc6e8807c52105fb137ec6/pokemon-es.json";
   const urlEN =
     "https://gist.githubusercontent.com/jhonatan89/2089276d3ce0faceff8e55fc3459b818/raw/30ee1a77b3e328108faaaa9aaac6f2ddaa3d3711/pokemons-en.json";
+  
   const [pokemons, setPokemons] = useState([]);
-
+  const [locale, setLocale] = useContext(LocaleContext);
+  const [pokemonsList, setPokemonsList] = useContext(PokemonsContext);
   //Get data
-  useEffect(() => {
-    fetchPokemons();
-  }, []);
-
   useEffect(() => {
     if (!navigator.onLine) {
       if (JSON.parse(localStorage.getItem("pokemons")) === null) {
-        console.log("nada :c");
+        setPokemons("nada :c");
+        setPokemonsList("nada :c")
       } else {
         setPokemons(JSON.parse(localStorage.getItem("pokemons")));
+        setPokemonsList(JSON.parse(localStorage.getItem("pokemons")));
       }
     } else {
       fetchPokemons();
     }
   }, []);
 
-  const fetchPokemons = async () => {
+  fetchPokemons = async () => {
     const respES = await fetch(urlES);
     const datpES = await respES.json();
     const respEN = await fetch(urlEN);
     const datpEN = await respEN.json();
-    //console.log(dataES);
     var pokemons = null;
-    if(getLanguage()){
+    if(locale.includes("en")){
       pokemons = datpEN?.map((resp) => {
         return {
           id: resp.id,
@@ -64,15 +68,16 @@ export const PokemonList = () => {
       });
     }
     setPokemons(pokemons);
+    setPokemonsList(pokemons);
     localStorage.setItem("pokemons", JSON.stringify(pokemons));
   };
 
   return (
     <>
-      <div className='pokemon-container'>
+      <Container className='pokemon-container'>
         <h1><FormattedMessage id="Tittle"/></h1>
-        <table className='table'>
-          <thead>
+        <Table className='table'>
+          <thead className="thead-dark">
             <tr>
               <th scope='col'>#</th>
               <th scope='col'><FormattedMessage id="Image"/></th>
@@ -92,24 +97,27 @@ export const PokemonList = () => {
               <td>{elm.description}</td>
               <td><FormattedNumber value={elm.height}/></td>
               <td><FormattedNumber value={elm.weight}/></td>
-              <td>{elm.type}</td>
+              <td>
+                <p className="type">{elm.type[0]}</p>
+                <p className="type">{elm.type[1]}</p>
+              </td>
             </tr>
           ))}  
           </tbody>
-        </table>
+        </Table>
         <div>
-          <Pie data={pokemons}/>
+          <BarChart data={pokemons}/>
         </div>
-      </div>
+      </Container>
     </>
   );
 };
 
 //Get current browser language
-function getLanguage() {
-  if (navigator.language.includes("en")) {
+function getLanguage(pLocale) {
+  if (pLocale.includes("en")) {
     return true;
-  } else if (navigator.language.includes("es")) {
+  } else if (pLocale.includes("es")) {
     return false;
   }
 }
